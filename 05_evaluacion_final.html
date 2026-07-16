@@ -36,6 +36,26 @@ button:hover{filter:brightness(.95)}
 .topnav{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
 .topnav a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.55);padding:7px 11px;border-radius:999px}
 footer{text-align:center;color:#64748b;padding:25px}
+.modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(15,23,42,.78);padding:18px;align-items:center;justify-content:center}
+.modal.activo{display:flex}
+.modal-contenido{width:min(720px,100%);max-height:95vh;overflow:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+.comprobante{position:relative;overflow:hidden;border-radius:18px;padding:34px 26px;text-align:center;color:#10213d;background:
+linear-gradient(135deg,rgba(23,78,166,.11),rgba(111,66,193,.16)),
+repeating-linear-gradient(45deg,transparent 0 28px,rgba(23,78,166,.08) 28px 30px),
+repeating-linear-gradient(-45deg,transparent 0 44px,rgba(111,66,193,.07) 44px 47px),#f8fbff;
+border:3px solid #174ea6}
+.comprobante:before,.comprobante:after{content:"";position:absolute;border-radius:30px;transform:rotate(35deg);opacity:.16;pointer-events:none}
+.comprobante:before{width:280px;height:110px;background:#174ea6;top:-55px;left:-80px}
+.comprobante:after{width:320px;height:130px;background:#6f42c1;bottom:-70px;right:-90px}
+.comprobante>*{position:relative;z-index:1}
+.sello{display:inline-block;background:#174ea6;color:#fff;border-radius:999px;padding:7px 15px;font-weight:700;letter-spacing:.5px}
+.nota-grande{font-size:clamp(3.2rem,12vw,6rem);font-weight:900;color:#174ea6;line-height:1;margin:18px 0 8px}
+.datos-resultado{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;text-align:left}
+.dato{background:rgba(255,255,255,.78);border:1px solid rgba(23,78,166,.2);padding:12px;border-radius:12px}
+.codigo{font-family:Consolas,monospace;letter-spacing:1px;font-weight:700}
+.acciones-modal{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.secundario{background:#64748b}
+.aviso{font-size:.9rem;color:#475569;margin-top:12px}
 @media(max-width:760px){.grid{grid-template-columns:1fr}.card{padding:18px}}
 </style></head><body>
 <header><h1>Evaluación final</h1><p>Operadores aritméticos, comparacionales y lógicos</p><p class="docente">Clase del Ing. Franco Peñarrieta</p>
@@ -51,7 +71,30 @@ footer{text-align:center;color:#64748b;padding:25px}
 <section class="card"><h2>Datos del estudiante</h2><label for="nombre"><strong>Nombre completo</strong></label><input type="text" id="nombre" placeholder="Escribe tu nombre completo"></section>
 <section class="card"><h2>Instrucciones</h2><p>Responde los 20 ejercicios. Cada respuesta correcta vale 5 puntos. Al finalizar, se mostrará tu nota sobre 100 puntos.</p></section>
 <section class="card"><div id="ejercicios"></div><button onclick="calificar()">Finalizar y ver nota</button><button onclick="generar()">Generar otra evaluación</button><div id="resultado"></div></section>
-</main><footer>Clase del Ing. Franco Peñarrieta</footer><script>
+</main>
+<div id="modalResultado" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloResultado">
+  <div class="modal-contenido">
+    <div id="comprobante" class="comprobante">
+      <span class="sello">COMPROBANTE DE EVALUACIÓN</span>
+      <h2 id="tituloResultado" style="border:0;margin:18px 0 4px">Evaluación final de operadores</h2>
+      <p>Clase del Ing. Franco Peñarrieta</p>
+      <div id="notaModal" class="nota-grande">0/100</div>
+      <div class="datos-resultado">
+        <div class="dato"><strong>Estudiante</strong><br><span id="nombreModal"></span></div>
+        <div class="dato"><strong>Respuestas correctas</strong><br><span id="correctasModal"></span></div>
+        <div class="dato"><strong>Fecha y hora</strong><br><span id="fechaModal"></span></div>
+        <div class="dato"><strong>Código de verificación</strong><br><span id="codigoModal" class="codigo"></span></div>
+      </div>
+      <p>Resultado generado automáticamente al finalizar la evaluación.</p>
+    </div>
+    <div class="acciones-modal">
+      <button onclick="descargarResultado()">Descargar resultado como imagen</button>
+      <button class="secundario" onclick="cerrarModal()">Cerrar</button>
+    </div>
+    <p class="aviso">La imagen incluye un fondo geométrico, la fecha, la hora y un código de verificación para dificultar alteraciones.</p>
+  </div>
+</div>
+<footer>Clase del Ing. Franco Peñarrieta</footer><script>
 let respuestas=[];
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function vf(x){return x?'Verdadero':'Falso'}
@@ -81,14 +124,115 @@ function generar(){
  }
  document.getElementById('ejercicios').innerHTML=h;document.getElementById('resultado').innerHTML='';
 }
+let ultimoResultado=null;
+function crearCodigo(nombre,nota,fecha){
+ const base=(nombre+'|'+nota+'|'+fecha.getTime()).toUpperCase();
+ let hash=0;
+ for(let i=0;i<base.length;i++) hash=((hash<<5)-hash)+base.charCodeAt(i),hash|=0;
+ return 'OP-'+Math.abs(hash).toString(36).toUpperCase().padStart(7,'0').slice(0,7);
+}
 function calificar(){
  let nombre=document.getElementById('nombre').value.trim();
  if(!nombre){alert('Introduce tu nombre antes de finalizar.');return}
  let c=0;
  respuestas.forEach((r,i)=>{let el=document.getElementById('r'+i);if(String(el.value)===String(r))c++});
- let nota=c*5;
- document.getElementById('resultado').innerHTML=`<div class="result"><strong>Estudiante:</strong> ${nombre}<br><strong>Respuestas correctas:</strong> ${c} de 20<br><strong>Nota final:</strong> ${nota}/100</div>`;
- window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+ let nota=c*5, fecha=new Date(), codigo=crearCodigo(nombre,nota,fecha);
+ ultimoResultado={nombre,c,nota,fecha,codigo};
+ document.getElementById('resultado').innerHTML=`<div class="result"><strong>Evaluación finalizada.</strong> Descarga el comprobante desde la ventana emergente.</div>`;
+ document.getElementById('nombreModal').textContent=nombre;
+ document.getElementById('correctasModal').textContent=`${c} de 20`;
+ document.getElementById('notaModal').textContent=`${nota}/100`;
+ document.getElementById('fechaModal').textContent=fecha.toLocaleString('es-BO');
+ document.getElementById('codigoModal').textContent=codigo;
+ document.getElementById('modalResultado').classList.add('activo');
 }
+function cerrarModal(){document.getElementById('modalResultado').classList.remove('activo')}
+function redondearRect(ctx,x,y,w,h,r){
+ ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();
+}
+function descargarResultado(){
+ if(!ultimoResultado)return;
+ const {nombre,c,nota,fecha,codigo}=ultimoResultado;
+ const canvas=document.createElement('canvas');
+ canvas.width=1200;canvas.height=850;
+ const ctx=canvas.getContext('2d');
+
+ const grad=ctx.createLinearGradient(0,0,1200,850);
+ grad.addColorStop(0,'#eef5ff');grad.addColorStop(1,'#f4efff');
+ ctx.fillStyle=grad;ctx.fillRect(0,0,1200,850);
+
+ // Fondo geométrico integrado en la propia imagen.
+ ctx.globalAlpha=.12;
+ ctx.fillStyle='#174ea6';
+ for(let x=-120;x<1300;x+=180){
+   ctx.save();ctx.translate(x,0);ctx.rotate(Math.PI/5);ctx.fillRect(0,-260,80,1300);ctx.restore();
+ }
+ ctx.fillStyle='#6f42c1';
+ for(let y=-80;y<950;y+=170){
+   ctx.beginPath();ctx.arc(1100,y,95,0,Math.PI*2);ctx.fill();
+ }
+ ctx.globalAlpha=.07;
+ ctx.fillStyle='#10213d';
+ ctx.font='bold 34px Arial';
+ for(let y=140;y<850;y+=150){
+   for(let x=-20;x<1200;x+=300){
+     ctx.save();ctx.translate(x,y);ctx.rotate(-.25);ctx.fillText(`${nota}/100 • ${codigo}`,0,0);ctx.restore();
+   }
+ }
+ ctx.globalAlpha=1;
+
+ ctx.fillStyle='rgba(255,255,255,.91)';
+ redondearRect(ctx,70,55,1060,740,28);
+ ctx.strokeStyle='#174ea6';ctx.lineWidth=6;
+ ctx.strokeRect(70,55,1060,740);
+
+ ctx.textAlign='center';
+ ctx.fillStyle='#174ea6';
+ ctx.font='bold 30px Arial';
+ ctx.fillText('COMPROBANTE DE EVALUACIÓN',600,125);
+ ctx.fillStyle='#10213d';
+ ctx.font='bold 44px Arial';
+ ctx.fillText('Evaluación final de operadores',600,190);
+ ctx.font='28px Arial';
+ ctx.fillText('Clase del Ing. Franco Peñarrieta',600,235);
+
+ ctx.fillStyle='#174ea6';
+ ctx.font='bold 112px Arial';
+ ctx.fillText(`${nota}/100`,600,380);
+
+ ctx.textAlign='left';
+ ctx.fillStyle='#10213d';
+ ctx.font='bold 27px Arial';
+ ctx.fillText('Estudiante:',145,485);
+ ctx.font='27px Arial';
+ ctx.fillText(nombre,360,485);
+
+ ctx.font='bold 27px Arial';
+ ctx.fillText('Respuestas correctas:',145,545);
+ ctx.font='27px Arial';
+ ctx.fillText(`${c} de 20`,450,545);
+
+ ctx.font='bold 27px Arial';
+ ctx.fillText('Fecha y hora:',145,605);
+ ctx.font='27px Arial';
+ ctx.fillText(fecha.toLocaleString('es-BO'),360,605);
+
+ ctx.font='bold 27px Arial';
+ ctx.fillText('Código de verificación:',145,665);
+ ctx.font='bold 27px Consolas, monospace';
+ ctx.fillText(codigo,470,665);
+
+ ctx.textAlign='center';
+ ctx.fillStyle='#475569';
+ ctx.font='22px Arial';
+ ctx.fillText('Resultado generado automáticamente al finalizar la evaluación.',600,740);
+
+ const enlace=document.createElement('a');
+ const nombreSeguro=nombre.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]+/g,'_');
+ enlace.download=`resultado_${nombreSeguro}_${codigo}.png`;
+ enlace.href=canvas.toDataURL('image/png');
+ enlace.click();
+}
+document.getElementById('modalResultado').addEventListener('click',e=>{if(e.target.id==='modalResultado')cerrarModal()});
 generar();
 </script></body></html>
