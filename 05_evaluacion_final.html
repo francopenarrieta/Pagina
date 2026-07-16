@@ -156,40 +156,123 @@ function crearImagenResultado(){
  if(!ultimoResultado)return null;
  const {nombre,c,nota,fecha,codigo}=ultimoResultado;
  const canvas=document.createElement('canvas');
- canvas.width=1200;canvas.height=850;
+ canvas.width=1400;canvas.height=1000;
  const ctx=canvas.getContext('2d');
 
- const grad=ctx.createLinearGradient(0,0,1200,850);
- grad.addColorStop(0,'#eef5ff');grad.addColorStop(1,'#f4efff');
- ctx.fillStyle=grad;ctx.fillRect(0,0,1200,850);
+ // Fondo base oscuro.
+ const fondo=ctx.createLinearGradient(0,0,1400,1000);
+ fondo.addColorStop(0,'#031a38');
+ fondo.addColorStop(.48,'#073d78');
+ fondo.addColorStop(1,'#02142d');
+ ctx.fillStyle=fondo;ctx.fillRect(0,0,1400,1000);
 
- ctx.globalAlpha=.12;ctx.fillStyle='#174ea6';
- for(let x=-120;x<1300;x+=180){ctx.save();ctx.translate(x,0);ctx.rotate(Math.PI/5);ctx.fillRect(0,-260,80,1300);ctx.restore()}
- ctx.fillStyle='#6f42c1';
- for(let y=-80;y<950;y+=170){ctx.beginPath();ctx.arc(1100,y,95,0,Math.PI*2);ctx.fill()}
- ctx.globalAlpha=.07;ctx.fillStyle='#10213d';ctx.font='bold 34px Arial';
- for(let y=140;y<850;y+=150){for(let x=-20;x<1200;x+=300){ctx.save();ctx.translate(x,y);ctx.rotate(-.25);ctx.fillText(`${nota}/100 • ${codigo}`,0,0);ctx.restore()}}
- ctx.globalAlpha=1;
+ // Polígonos geométricos visibles.
+ function poligono(puntos,color,alpha=1){
+   ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();
+   ctx.moveTo(puntos[0][0],puntos[0][1]);
+   for(let i=1;i<puntos.length;i++)ctx.lineTo(puntos[i][0],puntos[i][1]);
+   ctx.closePath();ctx.fill();ctx.restore();
+ }
+ poligono([[0,0],[510,0],[300,245],[0,360]],'#0f6fb8',.9);
+ poligono([[1400,0],[960,0],[1100,250],[1400,360]],'#075394',.95);
+ poligono([[0,1000],[0,690],[330,820],[500,1000]],'#0a5d9f',.95);
+ poligono([[1400,1000],[950,1000],[1135,790],[1400,670]],'#0d477e',.95);
+ poligono([[80,175],[260,95],[345,235],[190,330]],'#f4b83f',.9);
+ poligono([[1180,725],[1400,620],[1400,780],[1260,850]],'#f4b83f',.95);
+ poligono([[315,920],[535,790],[625,1000],[430,1000]],'#e99c24',.9);
 
- ctx.fillStyle='rgba(255,255,255,.91)';ctx.beginPath();ctx.roundRect(70,55,1060,740,28);ctx.fill();
- ctx.strokeStyle='#174ea6';ctx.lineWidth=6;ctx.beginPath();ctx.roundRect(70,55,1060,740,28);ctx.stroke();
+ // Líneas doradas decorativas.
+ ctx.save();ctx.strokeStyle='#f6bd45';ctx.lineWidth=3;ctx.globalAlpha=.95;
+ const lineas=[[[35,165],[255,35],[430,35]],[[1090,35],[1325,165],[1365,340]],[[35,780],[220,925],[420,965]],[[980,965],[1220,860],[1365,710]]];
+ lineas.forEach(l=>{ctx.beginPath();ctx.moveTo(l[0][0],l[0][1]);ctx.lineTo(l[1][0],l[1][1]);ctx.lineTo(l[2][0],l[2][1]);ctx.stroke()});
+ ctx.restore();
 
- ctx.textAlign='center';ctx.fillStyle='#174ea6';ctx.font='bold 30px Arial';ctx.fillText('COMPROBANTE DE EVALUACIÓN',600,125);
- ctx.fillStyle='#10213d';ctx.font='bold 44px Arial';ctx.fillText('Evaluación final de operadores',600,190);
- ctx.font='28px Arial';ctx.fillText('Clase del Ing. Franco Peñarrieta',600,235);
- ctx.fillStyle='#174ea6';ctx.font='bold 112px Arial';ctx.fillText(`${nota}/100`,600,380);
+ // Panel central tipo low-poly, nunca blanco puro.
+ const panel=ctx.createLinearGradient(250,80,1150,920);
+ panel.addColorStop(0,'#f0f5fa');panel.addColorStop(.5,'#dfe9f4');panel.addColorStop(1,'#eef3f8');
+ ctx.fillStyle=panel;ctx.beginPath();ctx.roundRect(185,75,1030,845,34);ctx.fill();
+ ctx.strokeStyle='#f4b83f';ctx.lineWidth=5;ctx.stroke();
 
- ctx.textAlign='left';ctx.fillStyle='#10213d';ctx.font='bold 27px Arial';ctx.fillText('Estudiante:',145,485);
- ctx.font='27px Arial';ctx.fillText(nombre,360,485);
- ctx.font='bold 27px Arial';ctx.fillText('Respuestas correctas:',145,545);
- ctx.font='27px Arial';ctx.fillText(`${c} de 20`,450,545);
- ctx.font='bold 27px Arial';ctx.fillText('Fecha y hora:',145,605);
- ctx.font='27px Arial';ctx.fillText(fecha.toLocaleString('es-BO'),360,605);
- ctx.font='bold 27px Arial';ctx.fillText('Código de verificación:',145,665);
- ctx.font='bold 27px Consolas, monospace';ctx.fillText(codigo,470,665);
- ctx.textAlign='center';ctx.fillStyle='#475569';ctx.font='22px Arial';ctx.fillText('Resultado generado automáticamente al finalizar la evaluación.',600,740);
+ // Malla geométrica visible en todo el panel.
+ ctx.save();ctx.globalAlpha=.22;ctx.strokeStyle='#6e8dac';ctx.lineWidth=1.5;
+ for(let y=90;y<920;y+=70){
+   for(let x=190;x<1220;x+=90){
+     ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+45,y+35);ctx.lineTo(x+90,y);ctx.stroke();
+     ctx.beginPath();ctx.moveTo(x+45,y+35);ctx.lineTo(x,y+70);ctx.lineTo(x+90,y+70);ctx.closePath();ctx.stroke();
+   }
+ }
+ ctx.restore();
+
+ // Marcas de agua repetidas y diagonales detrás de todos los datos.
+ ctx.save();ctx.globalAlpha=.10;ctx.fillStyle='#163a62';ctx.font='bold 27px Arial';
+ for(let y=145;y<900;y+=105){
+   for(let x=180;x<1220;x+=310){
+     ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/8);
+     ctx.fillText(`ING. FRANCO PEÑARRIETA • ${codigo}`,0,0);
+     ctx.restore();
+   }
+ }
+ ctx.globalAlpha=.055;ctx.font='bold 48px Arial';
+ for(let y=210;y<900;y+=190){
+   for(let x=210;x<1200;x+=430){
+     ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/7);
+     ctx.fillText(`${nota}/100`,0,0);ctx.restore();
+   }
+ }
+ ctx.restore();
+
+ // Encabezado.
+ ctx.textAlign='center';ctx.fillStyle='#e8a91d';ctx.font='bold 65px Arial';ctx.fillText('★',700,145);
+ ctx.fillStyle='#061d3d';ctx.font='bold 57px Arial';ctx.fillText('EVALUACIÓN FINAL',700,222);
+ ctx.font='bold 25px Arial';ctx.fillText('OPERADORES ARITMÉTICOS, COMPARACIONALES Y LÓGICOS',700,266);
+
+ // Cinta del docente.
+ ctx.fillStyle='#082f63';ctx.beginPath();ctx.roundRect(405,288,590,54,9);ctx.fill();
+ ctx.fillStyle='#fff';ctx.font='bold 24px Arial';ctx.fillText('CLASE DEL ING. FRANCO PEÑARRIETA',700,324);
+
+ // Datos del estudiante, sobre fondo texturizado, sin cajas blancas.
+ ctx.textAlign='left';ctx.fillStyle='#061d3d';ctx.font='bold 21px Arial';ctx.fillText('ESTUDIANTE',285,405);
+ ctx.font='bold 45px Arial';ctx.fillText(nombre,285,455);
+ ctx.strokeStyle='#315b85';ctx.lineWidth=2;ctx.setLineDash([8,5]);ctx.beginPath();ctx.moveTo(285,475);ctx.lineTo(690,475);ctx.stroke();ctx.setLineDash([]);
+
+ ctx.font='bold 21px Arial';ctx.fillText('FECHA',285,535);
+ ctx.font='24px Arial';ctx.fillText(fecha.toLocaleDateString('es-BO'),285,568);
+ ctx.font='bold 21px Arial';ctx.fillText('HORA',285,620);
+ ctx.font='24px Arial';ctx.fillText(fecha.toLocaleTimeString('es-BO',{hour:'2-digit',minute:'2-digit'}),285,653);
+ ctx.font='bold 21px Arial';ctx.fillText('TOTAL DE PREGUNTAS',285,705);
+ ctx.font='24px Arial';ctx.fillText('20',285,738);
+ ctx.font='bold 21px Arial';ctx.fillText('RESPUESTAS CORRECTAS',285,790);
+ ctx.font='24px Arial';ctx.fillText(`${c} de 20`,285,823);
+
+ // Hexágono de nota con doble borde y textura interna.
+ const cx=910,cy=585,r=205;
+ function hex(rad){ctx.beginPath();for(let i=0;i<6;i++){let a=Math.PI/3*i-Math.PI/6;let x=cx+Math.cos(a)*rad,y=cy+Math.sin(a)*rad;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath()}
+ ctx.fillStyle='rgba(225,235,244,.80)';hex(r);ctx.fill();
+ ctx.strokeStyle='#f2b83e';ctx.lineWidth=8;hex(r);ctx.stroke();
+ ctx.strokeStyle='#0a3c77';ctx.lineWidth=5;hex(r-13);ctx.stroke();
+ ctx.save();hex(r-22);ctx.clip();ctx.globalAlpha=.13;ctx.strokeStyle='#315b85';
+ for(let y=380;y<790;y+=32){ctx.beginPath();ctx.moveTo(705,y);ctx.lineTo(1115,y+120);ctx.stroke()}
+ ctx.restore();
+ ctx.textAlign='center';ctx.fillStyle='#061d3d';ctx.font='bold 25px Arial';ctx.fillText('TU NOTA',cx,500);
+ const notaColor=nota>=51?'#198c3a':'#c92a2a';ctx.fillStyle=notaColor;ctx.font='bold 125px Arial';ctx.fillText(String(nota),cx-20,640);
+ ctx.fillStyle='#061d3d';ctx.font='bold 47px Arial';ctx.fillText('/100',cx+105,640);
+ ctx.fillStyle=notaColor;ctx.font='bold 29px Arial';ctx.fillText(nota>=51?'¡FELICITACIONES!':'SIGUE PRACTICANDO',cx,705);
+
+ // Código de verificación con fondo oscuro.
+ ctx.fillStyle='#061d3d';ctx.beginPath();ctx.roundRect(535,835,330,44,8);ctx.fill();
+ ctx.fillStyle='#fff';ctx.font='bold 20px Arial';ctx.fillText('CÓDIGO DE VERIFICACIÓN',700,864);
+ ctx.fillStyle='#eef3f8';ctx.beginPath();ctx.roundRect(535,879,330,54,8);ctx.fill();
+ ctx.strokeStyle='#061d3d';ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle='#061d3d';ctx.font='bold 24px Consolas, monospace';ctx.fillText(codigo,700,914);
+
+ // Microtexto de seguridad inferior.
+ ctx.save();ctx.globalAlpha=.36;ctx.fillStyle='#315b85';ctx.font='10px Arial';ctx.textAlign='left';
+ let micro='ING. FRANCO PEÑARRIETA • EVALUACIÓN FINAL • '+codigo+' • '+nota+'/100 • ';
+ for(let y=940;y<985;y+=13){let cadena='';while(cadena.length<260)cadena+=micro;ctx.fillText(cadena,205,y)}
+ ctx.restore();
  return canvas;
 }
+
 function mostrarComprobanteExacto(){
  const canvas=crearImagenResultado();if(!canvas)return;
  ultimoResultado.imagen=canvas.toDataURL('image/png');
