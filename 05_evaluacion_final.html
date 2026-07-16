@@ -48,6 +48,7 @@ border:3px solid #174ea6}
 .comprobante:before{width:280px;height:110px;background:#174ea6;top:-55px;left:-80px}
 .comprobante:after{width:320px;height:130px;background:#6f42c1;bottom:-70px;right:-90px}
 .comprobante>*{position:relative;z-index:1}
+.comprobante img{display:block;width:100%;height:auto;border-radius:12px}
 .sello{display:inline-block;background:#174ea6;color:#fff;border-radius:999px;padding:7px 15px;font-weight:700;letter-spacing:.5px}
 .nota-grande{font-size:clamp(3.2rem,12vw,6rem);font-weight:900;color:#174ea6;line-height:1;margin:18px 0 8px}
 .datos-resultado{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;text-align:left}
@@ -144,14 +145,15 @@ function calificar(){
  document.getElementById('notaModal').textContent=`${nota}/100`;
  document.getElementById('fechaModal').textContent=fecha.toLocaleString('es-BO');
  document.getElementById('codigoModal').textContent=codigo;
+ mostrarComprobanteExacto();
  document.getElementById('modalResultado').classList.add('activo');
 }
 function cerrarModal(){document.getElementById('modalResultado').classList.remove('activo')}
 function redondearRect(ctx,x,y,w,h,r){
  ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();
 }
-function descargarResultado(){
- if(!ultimoResultado)return;
+function crearImagenResultado(){
+ if(!ultimoResultado)return null;
  const {nombre,c,nota,fecha,codigo}=ultimoResultado;
  const canvas=document.createElement('canvas');
  canvas.width=1200;canvas.height=850;
@@ -161,77 +163,46 @@ function descargarResultado(){
  grad.addColorStop(0,'#eef5ff');grad.addColorStop(1,'#f4efff');
  ctx.fillStyle=grad;ctx.fillRect(0,0,1200,850);
 
- // Fondo geométrico integrado en la propia imagen.
- ctx.globalAlpha=.12;
- ctx.fillStyle='#174ea6';
- for(let x=-120;x<1300;x+=180){
-   ctx.save();ctx.translate(x,0);ctx.rotate(Math.PI/5);ctx.fillRect(0,-260,80,1300);ctx.restore();
- }
+ ctx.globalAlpha=.12;ctx.fillStyle='#174ea6';
+ for(let x=-120;x<1300;x+=180){ctx.save();ctx.translate(x,0);ctx.rotate(Math.PI/5);ctx.fillRect(0,-260,80,1300);ctx.restore()}
  ctx.fillStyle='#6f42c1';
- for(let y=-80;y<950;y+=170){
-   ctx.beginPath();ctx.arc(1100,y,95,0,Math.PI*2);ctx.fill();
- }
- ctx.globalAlpha=.07;
- ctx.fillStyle='#10213d';
- ctx.font='bold 34px Arial';
- for(let y=140;y<850;y+=150){
-   for(let x=-20;x<1200;x+=300){
-     ctx.save();ctx.translate(x,y);ctx.rotate(-.25);ctx.fillText(`${nota}/100 • ${codigo}`,0,0);ctx.restore();
-   }
- }
+ for(let y=-80;y<950;y+=170){ctx.beginPath();ctx.arc(1100,y,95,0,Math.PI*2);ctx.fill()}
+ ctx.globalAlpha=.07;ctx.fillStyle='#10213d';ctx.font='bold 34px Arial';
+ for(let y=140;y<850;y+=150){for(let x=-20;x<1200;x+=300){ctx.save();ctx.translate(x,y);ctx.rotate(-.25);ctx.fillText(`${nota}/100 • ${codigo}`,0,0);ctx.restore()}}
  ctx.globalAlpha=1;
 
- ctx.fillStyle='rgba(255,255,255,.91)';
- redondearRect(ctx,70,55,1060,740,28);
- ctx.strokeStyle='#174ea6';ctx.lineWidth=6;
- ctx.strokeRect(70,55,1060,740);
+ ctx.fillStyle='rgba(255,255,255,.91)';ctx.beginPath();ctx.roundRect(70,55,1060,740,28);ctx.fill();
+ ctx.strokeStyle='#174ea6';ctx.lineWidth=6;ctx.beginPath();ctx.roundRect(70,55,1060,740,28);ctx.stroke();
 
- ctx.textAlign='center';
- ctx.fillStyle='#174ea6';
- ctx.font='bold 30px Arial';
- ctx.fillText('COMPROBANTE DE EVALUACIÓN',600,125);
- ctx.fillStyle='#10213d';
- ctx.font='bold 44px Arial';
- ctx.fillText('Evaluación final de operadores',600,190);
- ctx.font='28px Arial';
- ctx.fillText('Clase del Ing. Franco Peñarrieta',600,235);
+ ctx.textAlign='center';ctx.fillStyle='#174ea6';ctx.font='bold 30px Arial';ctx.fillText('COMPROBANTE DE EVALUACIÓN',600,125);
+ ctx.fillStyle='#10213d';ctx.font='bold 44px Arial';ctx.fillText('Evaluación final de operadores',600,190);
+ ctx.font='28px Arial';ctx.fillText('Clase del Ing. Franco Peñarrieta',600,235);
+ ctx.fillStyle='#174ea6';ctx.font='bold 112px Arial';ctx.fillText(`${nota}/100`,600,380);
 
- ctx.fillStyle='#174ea6';
- ctx.font='bold 112px Arial';
- ctx.fillText(`${nota}/100`,600,380);
-
- ctx.textAlign='left';
- ctx.fillStyle='#10213d';
- ctx.font='bold 27px Arial';
- ctx.fillText('Estudiante:',145,485);
- ctx.font='27px Arial';
- ctx.fillText(nombre,360,485);
-
- ctx.font='bold 27px Arial';
- ctx.fillText('Respuestas correctas:',145,545);
- ctx.font='27px Arial';
- ctx.fillText(`${c} de 20`,450,545);
-
- ctx.font='bold 27px Arial';
- ctx.fillText('Fecha y hora:',145,605);
- ctx.font='27px Arial';
- ctx.fillText(fecha.toLocaleString('es-BO'),360,605);
-
- ctx.font='bold 27px Arial';
- ctx.fillText('Código de verificación:',145,665);
- ctx.font='bold 27px Consolas, monospace';
- ctx.fillText(codigo,470,665);
-
- ctx.textAlign='center';
- ctx.fillStyle='#475569';
- ctx.font='22px Arial';
- ctx.fillText('Resultado generado automáticamente al finalizar la evaluación.',600,740);
-
+ ctx.textAlign='left';ctx.fillStyle='#10213d';ctx.font='bold 27px Arial';ctx.fillText('Estudiante:',145,485);
+ ctx.font='27px Arial';ctx.fillText(nombre,360,485);
+ ctx.font='bold 27px Arial';ctx.fillText('Respuestas correctas:',145,545);
+ ctx.font='27px Arial';ctx.fillText(`${c} de 20`,450,545);
+ ctx.font='bold 27px Arial';ctx.fillText('Fecha y hora:',145,605);
+ ctx.font='27px Arial';ctx.fillText(fecha.toLocaleString('es-BO'),360,605);
+ ctx.font='bold 27px Arial';ctx.fillText('Código de verificación:',145,665);
+ ctx.font='bold 27px Consolas, monospace';ctx.fillText(codigo,470,665);
+ ctx.textAlign='center';ctx.fillStyle='#475569';ctx.font='22px Arial';ctx.fillText('Resultado generado automáticamente al finalizar la evaluación.',600,740);
+ return canvas;
+}
+function mostrarComprobanteExacto(){
+ const canvas=crearImagenResultado();if(!canvas)return;
+ ultimoResultado.imagen=canvas.toDataURL('image/png');
+ const img=document.createElement('img');img.src=ultimoResultado.imagen;img.alt='Comprobante de evaluación';
+ const cont=document.getElementById('comprobante');cont.innerHTML='';cont.appendChild(img);
+}
+function descargarResultado(){
+ if(!ultimoResultado)return;
+ if(!ultimoResultado.imagen)mostrarComprobanteExacto();
  const enlace=document.createElement('a');
- const nombreSeguro=nombre.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]+/g,'_');
- enlace.download=`resultado_${nombreSeguro}_${codigo}.png`;
- enlace.href=canvas.toDataURL('image/png');
- enlace.click();
+ const nombreSeguro=ultimoResultado.nombre.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]+/g,'_');
+ enlace.download=`resultado_${nombreSeguro}_${ultimoResultado.codigo}.png`;
+ enlace.href=ultimoResultado.imagen;enlace.click();
 }
 document.getElementById('modalResultado').addEventListener('click',e=>{if(e.target.id==='modalResultado')cerrarModal()});
 generar();
