@@ -1,432 +1,107 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tema 1: Operadores en Programación</title>
-  <style>
-    :root {
-      --azul: #174ea6;
-      --azul-claro: #eaf2ff;
-      --morado: #6f42c1;
-      --verde: #198754;
-      --naranja: #fd7e14;
-      --rojo: #dc3545;
-      --gris: #5f6368;
-      --fondo: #f5f7fb;
-      --blanco: #ffffff;
-      --borde: #dfe5ef;
-      --codigo: #101828;
-    }
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Guía: Operadores</title><style>
+:root{
+  --azul:#174ea6;--morado:#6f42c1;--verde:#198754;--naranja:#f59e0b;
+  --rojo:#dc3545;--fondo:#f5f7fb;--blanco:#fff;--texto:#1f2937;--borde:#dbe3ef;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--fondo);color:var(--texto);line-height:1.6}
+header{background:linear-gradient(135deg,#0d47a1,#512da8);color:#fff;padding:38px 20px;text-align:center}
+header h1{margin:0 0 8px;font-size:clamp(2rem,5vw,3rem)}
+header p{margin:5px 0}
+.docente{font-weight:700}
+main{width:min(1050px,92%);margin:28px auto 60px}
+.card{background:#fff;border:1px solid var(--borde);border-radius:18px;padding:24px;margin-bottom:22px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+h2{color:var(--azul);margin-top:0;border-bottom:3px solid #eaf2ff;padding-bottom:8px}
+h3{color:var(--morado)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.box{border-radius:15px;padding:20px;color:#fff}
+.a{background:linear-gradient(135deg,#f59e0b,#ea580c)}
+.c{background:linear-gradient(135deg,#0284c7,#2563eb)}
+.l{background:linear-gradient(135deg,#16a34a,#15803d)}
+.symbols{font-size:2rem;font-weight:bold;letter-spacing:5px}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th{background:var(--azul);color:#fff;text-align:left}
+th,td{border:1px solid var(--borde);padding:10px}
+tr:nth-child(even){background:#f8fafc}
+.scroll{overflow-x:auto}
+.note{background:#eef6ff;border-left:5px solid var(--azul);padding:15px;border-radius:10px}
+.exercise{padding:16px;border:1px solid var(--borde);border-radius:12px;margin:14px 0;background:#fff}
+.exercise label{font-weight:700;display:block;margin-bottom:8px}
+input[type=text],input[type=number],select{width:100%;padding:10px 12px;border:1px solid #bfc9d8;border-radius:9px;font-size:1rem}
+button{background:var(--azul);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;margin-top:10px}
+button:hover{filter:brightness(.95)}
+.ok{color:var(--verde);font-weight:700}.bad{color:var(--rojo);font-weight:700}
+.result{margin-top:15px;padding:16px;border-radius:12px;background:#eef6ff;font-size:1.1rem}
+.topnav{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.topnav a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.55);padding:7px 11px;border-radius:999px}
+footer{text-align:center;color:#64748b;padding:25px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.card{padding:18px}}
+</style></head><body>
+<header><h1>Tema 1: Operadores</h1><p>Aritméticos, comparacionales y lógicos</p><p class="docente">Clase del Ing. Franco Peñarrieta</p>
+<div class="topnav">
+<a href="01_guia_contenido.html">Guía</a>
+<a href="02_practica_aritmeticos.html">Práctica aritmética</a>
+<a href="03_practica_comparacionales.html">Práctica comparacional</a>
+<a href="04_practica_logicos.html">Práctica lógica</a>
+<a href="05_evaluacion_final.html">Evaluación final</a>
+</div>
+</header>
+<main>
+<section class="card"><h2>Objetivos del tema</h2>
+<ul>
+<li>Reconocer los distintos tipos de operadores.</li>
+<li>Resolver operaciones aritméticas respetando su orden.</li>
+<li>Comparar cantidades y establecer relaciones entre ellas.</li>
+<li>Analizar expresiones lógicas y determinar si son verdaderas o falsas.</li>
+<li>Aplicar los operadores en situaciones cotidianas y ejercicios prácticos.</li>
+</ul></section>
 
-    * {
-      box-sizing: border-box;
-    }
+<section class="card"><h2>¿Qué es un operador?</h2>
+<p>Un operador es un símbolo que permite realizar una acción entre uno o más valores. Según la acción que realiza, puede ser aritmético, comparacional o lógico.</p>
+<div class="grid">
+<div class="box a"><h3>Aritméticos</h3><div class="symbols">+ − × ÷ %</div><p>Sirven para realizar cálculos.</p></div>
+<div class="box c"><h3>Comparacionales</h3><div class="symbols">= ≠ &gt; &lt;</div><p>Sirven para comparar cantidades.</p></div>
+<div class="box l"><h3>Lógicos</h3><div class="symbols">Y O NO</div><p>Sirven para relacionar condiciones.</p></div>
+</div></section>
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.65;
-      color: #1f2937;
-      background: var(--fondo);
-    }
+<section class="card"><h2>1. Operadores aritméticos</h2>
+<p>Permiten realizar operaciones matemáticas con números.</p>
+<div class="scroll"><table><thead><tr><th>Operador</th><th>Nombre</th><th>Ejemplo</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>+</td><td>Suma</td><td>8 + 4</td><td>12</td></tr>
+<tr><td>−</td><td>Resta</td><td>15 − 6</td><td>9</td></tr>
+<tr><td>×</td><td>Multiplicación</td><td>7 × 3</td><td>21</td></tr>
+<tr><td>÷</td><td>División</td><td>20 ÷ 4</td><td>5</td></tr>
+<tr><td>%</td><td>Residuo</td><td>17 % 5</td><td>2</td></tr>
+</tbody></table></div>
+<div class="note"><strong>Orden de resolución:</strong> primero paréntesis, luego multiplicaciones y divisiones, y finalmente sumas y restas.</div>
+</section>
 
-    header {
-      background: linear-gradient(135deg, #0d47a1, #512da8);
-      color: white;
-      padding: 48px 24px;
-      text-align: center;
-    }
+<section class="card"><h2>2. Operadores comparacionales</h2>
+<p>Permiten determinar la relación existente entre dos valores. El resultado siempre será verdadero o falso.</p>
+<div class="scroll"><table><thead><tr><th>Operador</th><th>Significado</th><th>Ejemplo</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>=</td><td>Igual que</td><td>5 = 5</td><td>Verdadero</td></tr>
+<tr><td>≠</td><td>Diferente de</td><td>8 ≠ 3</td><td>Verdadero</td></tr>
+<tr><td>&gt;</td><td>Mayor que</td><td>9 &gt; 4</td><td>Verdadero</td></tr>
+<tr><td>&lt;</td><td>Menor que</td><td>2 &lt; 7</td><td>Verdadero</td></tr>
+<tr><td>≥</td><td>Mayor o igual que</td><td>6 ≥ 6</td><td>Verdadero</td></tr>
+<tr><td>≤</td><td>Menor o igual que</td><td>3 ≤ 5</td><td>Verdadero</td></tr>
+</tbody></table></div></section>
 
-    header h1 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-    }
+<section class="card"><h2>3. Operadores lógicos</h2>
+<p>Permiten unir o negar condiciones. También producen como resultado verdadero o falso.</p>
+<div class="scroll"><table><thead><tr><th>Operador</th><th>Significado</th><th>Ejemplo cotidiano</th></tr></thead><tbody>
+<tr><td>Y</td><td>Las dos condiciones deben cumplirse.</td><td>Puede ingresar si tiene entrada Y documento.</td></tr>
+<tr><td>O</td><td>Al menos una condición debe cumplirse.</td><td>Puede pagar con efectivo O tarjeta.</td></tr>
+<tr><td>NO</td><td>Niega o invierte una condición.</td><td>NO está lloviendo.</td></tr>
+</tbody></table></div></section>
 
-    header p {
-      margin: 0;
-      font-size: 1.15rem;
-      opacity: 0.95;
-    }
-
-    .contenedor {
-      width: min(1100px, 92%);
-      margin: 32px auto 64px;
-    }
-
-    .tarjeta {
-      background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 18px;
-      padding: 28px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
-    }
-
-    h2 {
-      color: var(--azul);
-      margin-top: 0;
-      border-bottom: 3px solid var(--azul-claro);
-      padding-bottom: 8px;
-    }
-
-    h3 {
-      color: var(--morado);
-      margin-bottom: 8px;
-    }
-
-    .objetivos li,
-    .actividades li,
-    .errores li {
-      margin-bottom: 8px;
-    }
-
-    .destacado {
-      background: var(--azul-claro);
-      border-left: 5px solid var(--azul);
-      padding: 16px 18px;
-      border-radius: 10px;
-      margin: 18px 0;
-    }
-
-    .rejilla {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-top: 20px;
-    }
-
-    .mini {
-      border-radius: 14px;
-      padding: 20px;
-      color: white;
-      min-height: 170px;
-    }
-
-    .aritmeticos {
-      background: linear-gradient(135deg, #f59e0b, #ea580c);
-    }
-
-    .comparacionales {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-    }
-
-    .logicos {
-      background: linear-gradient(135deg, #16a34a, #15803d);
-    }
-
-    .mini h3 {
-      color: white;
-      margin-top: 0;
-      font-size: 1.3rem;
-    }
-
-    .simbolos {
-      font-size: 2rem;
-      font-weight: bold;
-      letter-spacing: 6px;
-      margin: 10px 0;
-    }
-
-    .tabla-responsive {
-      overflow-x: auto;
-      margin-top: 16px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 620px;
-    }
-
-    th {
-      background: var(--azul);
-      color: white;
-      text-align: left;
-    }
-
-    th, td {
-      border: 1px solid var(--borde);
-      padding: 12px;
-    }
-
-    tr:nth-child(even) {
-      background: #f8fafc;
-    }
-
-    code {
-      background: #eef2f7;
-      padding: 2px 6px;
-      border-radius: 5px;
-      font-family: Consolas, Monaco, monospace;
-    }
-
-    pre {
-      background: var(--codigo);
-      color: #e5e7eb;
-      padding: 20px;
-      border-radius: 14px;
-      overflow-x: auto;
-      line-height: 1.55;
-    }
-
-    pre code {
-      background: transparent;
-      padding: 0;
-      color: inherit;
-    }
-
-    .nota {
-      background: #fff8e6;
-      border-left: 5px solid var(--naranja);
-      padding: 16px;
-      border-radius: 10px;
-    }
-
-    .reto {
-      background: #eefbf3;
-      border: 1px solid #b7e4c7;
-      border-radius: 14px;
-      padding: 20px;
-      margin-top: 18px;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--gris);
-      padding: 28px 16px 40px;
-    }
-
-    @media (max-width: 800px) {
-      .rejilla {
-        grid-template-columns: 1fr;
-      }
-
-      .tarjeta {
-        padding: 20px;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <header>
-    <h1>Tema 1: Operadores en Programación</h1>
-    <p>Operadores aritméticos, comparacionales y lógicos</p>
-  </header>
-
-  <main class="contenedor">
-
-    <section class="tarjeta">
-      <h2>Objetivos del tema</h2>
-      <ul class="objetivos">
-        <li>Comprender qué son los operadores y cuál es su función dentro de un programa.</li>
-        <li>Identificar y utilizar operadores aritméticos para resolver cálculos.</li>
-        <li>Aplicar operadores comparacionales para evaluar relaciones entre valores.</li>
-        <li>Utilizar operadores lógicos para combinar condiciones.</li>
-        <li>Resolver ejercicios integrando operadores en expresiones y decisiones.</li>
-      </ul>
-    </section>
-
-    <section class="tarjeta">
-      <h2>1. ¿Qué es un operador?</h2>
-      <p>
-        Un operador es un símbolo que indica al lenguaje de programación que debe realizar una acción
-        sobre uno o más valores. A esos valores se los denomina <strong>operandos</strong>.
-      </p>
-
-      <div class="destacado">
-        Ejemplo: en la expresión <code>5 + 3</code>, los números 5 y 3 son los operandos,
-        mientras que el símbolo <code>+</code> es el operador.
-      </div>
-
-      <div class="rejilla">
-        <article class="mini aritmeticos">
-          <h3>Aritméticos</h3>
-          <div class="simbolos">+ − × ÷ %</div>
-          <p>Permiten realizar cálculos matemáticos.</p>
-        </article>
-
-        <article class="mini comparacionales">
-          <h3>Comparacionales</h3>
-          <div class="simbolos">== != &gt; &lt;</div>
-          <p>Permiten comparar valores y obtener verdadero o falso.</p>
-        </article>
-
-        <article class="mini logicos">
-          <h3>Lógicos</h3>
-          <div class="simbolos">&amp;&amp; || !</div>
-          <p>Permiten combinar o negar condiciones.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="tarjeta">
-      <h2>2. Operadores aritméticos</h2>
-      <p>Se utilizan para realizar operaciones matemáticas básicas dentro de un programa.</p>
-
-      <div class="tabla-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Operador</th>
-              <th>Nombre</th>
-              <th>Ejemplo</th>
-              <th>Resultado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>+</td><td>Suma</td><td>5 + 3</td><td>8</td></tr>
-            <tr><td>-</td><td>Resta</td><td>10 - 4</td><td>6</td></tr>
-            <tr><td>*</td><td>Multiplicación</td><td>4 * 2</td><td>8</td></tr>
-            <tr><td>/</td><td>División</td><td>10 / 2</td><td>5</td></tr>
-            <tr><td>%</td><td>Módulo o residuo</td><td>10 % 3</td><td>1</td></tr>
-            <tr><td>**</td><td>Potencia</td><td>2 ** 3</td><td>8</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="nota">
-        <strong>Importante:</strong> el operador módulo <code>%</code> devuelve el residuo de una división.
-        Por ejemplo, <code>10 % 3</code> da como resultado <code>1</code>.
-      </div>
-    </section>
-
-    <section class="tarjeta">
-      <h2>3. Operadores comparacionales</h2>
-      <p>
-        Comparan dos valores y devuelven un resultado booleano:
-        <strong>true</strong> (verdadero) o <strong>false</strong> (falso).
-      </p>
-
-      <div class="tabla-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Operador</th>
-              <th>Significado</th>
-              <th>Ejemplo</th>
-              <th>Resultado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>==</td><td>Igual que</td><td>5 == 5</td><td>true</td></tr>
-            <tr><td>!=</td><td>Diferente de</td><td>5 != 3</td><td>true</td></tr>
-            <tr><td>&gt;</td><td>Mayor que</td><td>7 &gt; 5</td><td>true</td></tr>
-            <tr><td>&lt;</td><td>Menor que</td><td>3 &lt; 6</td><td>true</td></tr>
-            <tr><td>&gt;=</td><td>Mayor o igual que</td><td>5 &gt;= 5</td><td>true</td></tr>
-            <tr><td>&lt;=</td><td>Menor o igual que</td><td>4 &lt;= 6</td><td>true</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="nota">
-        En JavaScript también existe el operador <code>===</code>, que compara tanto el valor como el tipo de dato.
-      </div>
-    </section>
-
-    <section class="tarjeta">
-      <h2>4. Operadores lógicos</h2>
-      <p>Permiten combinar varias condiciones o invertir su resultado.</p>
-
-      <div class="tabla-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Operador</th>
-              <th>Nombre</th>
-              <th>Ejemplo</th>
-              <th>Descripción</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>&amp;&amp;</td>
-              <td>AND (Y)</td>
-              <td>edad &gt;= 18 &amp;&amp; tienePermiso</td>
-              <td>Las dos condiciones deben ser verdaderas.</td>
-            </tr>
-            <tr>
-              <td>||</td>
-              <td>OR (O)</td>
-              <td>esDocente || esDirector</td>
-              <td>Al menos una condición debe ser verdadera.</td>
-            </tr>
-            <tr>
-              <td>!</td>
-              <td>NOT (NO)</td>
-              <td>!activo</td>
-              <td>Invierte el valor lógico de una condición.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="tarjeta">
-      <h2>5. Ejemplo integrador</h2>
-      <p>
-        El siguiente programa determina si un estudiante aprueba tomando en cuenta su nota y su asistencia:
-      </p>
-
-      <pre><code>let nota = 82;
-let asistencia = 90;
-
-if (nota &gt;= 70 &amp;&amp; asistencia &gt;= 80) {
-  console.log("Aprobado");
-} else {
-  console.log("Reprobado");
-}</code></pre>
-
-      <p>
-        En este ejemplo:
-      </p>
-      <ul>
-        <li><code>&gt;=</code> compara la nota y la asistencia.</li>
-        <li><code>&amp;&amp;</code> exige que ambas condiciones se cumplan.</li>
-        <li>El resultado permite tomar una decisión dentro del programa.</li>
-      </ul>
-    </section>
-
-    <section class="tarjeta">
-      <h2>6. Errores comunes</h2>
-      <ul class="errores">
-        <li>Confundir <code>=</code> con <code>==</code> o <code>===</code>.</li>
-        <li>No respetar el orden de las operaciones matemáticas.</li>
-        <li>Usar <code>&amp;&amp;</code> cuando en realidad se necesita <code>||</code>.</li>
-        <li>Olvidar los paréntesis en expresiones complejas.</li>
-        <li>Comparar valores de distinto tipo sin verificar su contenido.</li>
-      </ul>
-    </section>
-
-    <section class="tarjeta">
-      <h2>7. Actividades propuestas</h2>
-      <ol class="actividades">
-        <li>Resolver diez operaciones aritméticas.</li>
-        <li>Predecir el resultado de diez comparaciones.</li>
-        <li>Determinar si diferentes expresiones lógicas son verdaderas o falsas.</li>
-        <li>Crear un programa que determine si una persona puede ingresar a un evento según su edad y si tiene entrada.</li>
-        <li>Crear un programa que indique si un estudiante aprueba según su nota y asistencia.</li>
-      </ol>
-
-      <div class="reto">
-        <h3>Reto final</h3>
-        <p>
-          Diseña una expresión que permita verificar si un estudiante:
-        </p>
-        <ul>
-          <li>tiene una nota mayor o igual a 70,</li>
-          <li>una asistencia mayor o igual a 80,</li>
-          <li>y además entregó su proyecto final.</li>
-        </ul>
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    Guía de estudio · Tema 1 · Operadores en Programación
-  </footer>
-
-</body>
-</html>
+<section class="card"><h2>Prácticas del tema</h2>
+<p>Después de estudiar la guía, completa las siguientes actividades:</p>
+<ol>
+<li>Práctica de operadores aritméticos.</li>
+<li>Práctica de operadores comparacionales.</li>
+<li>Práctica de operadores lógicos.</li>
+<li>Evaluación final puntuada sobre 100 puntos.</li>
+</ol></section>
+</main><footer>Clase del Ing. Franco Peñarrieta</footer></body></html>
